@@ -104,23 +104,17 @@ And `Stream`-shaped helpers become a ~50-line adapter that pumps bytes
 between a `Stream&` and the new parser/serializer. The existing
 `Server::process_request` becomes that adapter plus the routing call.
 
-## Phased plan (proposed — open to revision)
+## Phased plan
 
-1. **Map the seams.** Inventory every place protocol code reads from or
-   writes to `Stream` directly. Catalogue them in a follow-up doc.
-2. **Build the request parser.** Pure state machine, byte-oriented, no
-   `Stream`. Drive it from a unit test with hand-fed byte chunks. Reuse
-   existing helpers (`parse_header`, `parse_request_line`,
-   `ChunkedDecoder` logic) but cut the `Stream&` dependency.
-3. **Build the response serializer.** Pure state machine, emits bytes
-   into a caller buffer. Reuse `write_response_line` /
-   `write_headers` formatting; cut the `Stream&` dependency.
-4. **Adapt `Server::process_request`.** Make it the thin pump between
-   `Stream` and the new core. Existing tests must still pass.
-5. **Repeat (2)–(4) for client side.**
-6. **WebSocket frame codec.** Same pattern.
-7. **Add hand-rolled-loop example** and **chunk-boundary tests**.
-8. (Stretch) Document the sans-IO API in a new `README-sansio.md`.
+See [PLAN.md](PLAN.md) for the executable plan, phase status, conventions
+locked in, and acceptance criteria. The phases break down as:
+
+1. **Request parser** — pure byte-fed state machine, no `Stream`.
+2. **Response serializer** — pure byte-emitting state machine, no `Stream`.
+3. **Adapt `Server::process_request`** — thin pump between `Stream` and the core.
+4. **Repeat (1)–(3) for the client side.**
+5. **WebSocket frame codec** — same pattern.
+6. **Hand-rolled-loop example** proving the core is usable without `Server`.
 
 ## Verification
 

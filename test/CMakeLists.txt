@@ -31,6 +31,24 @@ target_compile_options(httplib-test PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8;/b
 target_link_libraries(httplib-test PRIVATE httplib GTest::gtest_main CURL::libcurl)
 gtest_discover_tests(httplib-test)
 
+# Sans-IO core unit tests. Standalone — no httplib.h, no CURL, no sockets.
+# Only includes httplib_core.h, which is header-only and C++17. Existing
+# httplib-test target above is intentionally left untouched.
+add_executable(test-sansio-parser test_sansio_parser.cc)
+target_compile_features(test-sansio-parser PRIVATE cxx_std_17)
+target_compile_options(test-sansio-parser PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+target_include_directories(test-sansio-parser PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(test-sansio-parser PRIVATE GTest::gtest_main)
+gtest_discover_tests(test-sansio-parser)
+
+# Sans-IO response serializer tests. Same pattern as test-sansio-parser.
+add_executable(test-sansio-serializer test_sansio_serializer.cc)
+target_compile_features(test-sansio-serializer PRIVATE cxx_std_17)
+target_compile_options(test-sansio-serializer PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+target_include_directories(test-sansio-serializer PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(test-sansio-serializer PRIVATE GTest::gtest_main)
+gtest_discover_tests(test-sansio-serializer)
+
 file(
     COPY www www2 www3 ca-bundle.crt image.jpg
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
