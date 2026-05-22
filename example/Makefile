@@ -1,4 +1,4 @@
-#CXX = clang++
+CXX = g++
 CXXFLAGS = -O2 -std=c++11 -I.. -Wall -Wextra -pthread
 
 PREFIX ?= $(shell brew --prefix)

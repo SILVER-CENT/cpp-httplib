@@ -12,35 +12,36 @@ using namespace std;
 
 class EventDispatcher {
 public:
-  EventDispatcher() {}
+	EventDispatcher () {}
 
-  bool wait_event(DataSink *sink) {
-    unique_lock<mutex> lk(m_);
-    int id = id_;
+	bool
+	wait_event (DataSink* sink) {
+		unique_lock<mutex> lk (m_);
+		int id = id_;
 
-    // Wait with timeout to prevent hanging if client disconnects
-    if (!cv_.wait_for(lk, std::chrono::seconds(5),
-                      [&] { return cid_ == id; })) {
-      return false; // Timeout occurred
-    }
+		// Wait with timeout to prevent hanging if client disconnects
+		if (!cv_.wait_for (lk, std::chrono::seconds (5), [&] { return cid_ == id; })) {
+			return false;  // Timeout occurred
+		}
 
-    sink->write(message_.data(), message_.size());
-    return true;
-  }
+		sink->write (message_.data (), message_.size ());
+		return true;
+	}
 
-  void send_event(const string &message) {
-    lock_guard<mutex> lk(m_);
-    cid_ = id_++;
-    message_ = message;
-    cv_.notify_all();
-  }
+	void
+	send_event (const string& message) {
+		lock_guard<mutex> lk (m_);
+		cid_ = id_++;
+		message_ = message;
+		cv_.notify_all ();
+	}
 
 private:
-  mutex m_;
-  condition_variable cv_;
-  atomic_int id_{0};
-  atomic_int cid_{-1};
-  string message_;
+	mutex m_;
+	condition_variable cv_;
+	atomic_int id_{0};
+	atomic_int cid_{-1};
+	string message_;
 };
 
 const auto html = R"(
@@ -65,42 +66,41 @@ ev2.onmessage = function(e) {
 </html>
 )";
 
-int main(void) {
-  EventDispatcher ed;
+int
+main (void) {
+	EventDispatcher ed;
 
-  Server svr;
+	Server svr;
 
-  svr.Get("/", [&](const Request & /*req*/, Response &res) {
-    res.set_content(html, "text/html");
-  });
+	svr.Get ("/", [&] (const Request& /*req*/, Response& res) {
+		res.set_content (html, "text/html");
+	});
 
-  svr.Get("/event1", [&](const Request & /*req*/, Response &res) {
-    cout << "connected to event1..." << endl;
-    res.set_chunked_content_provider("text/event-stream",
-                                     [&](size_t /*offset*/, DataSink &sink) {
-                                       return ed.wait_event(&sink);
-                                     });
-  });
+	svr.Get ("/event1", [&] (const Request& /*req*/, Response& res) {
+		cout << "connected to event1..." << endl;
+		res.set_chunked_content_provider ("text/event-stream", [&] (size_t /*offset*/, DataSink& sink) {
+			return ed.wait_event (&sink);
+		});
+	});
 
-  svr.Get("/event2", [&](const Request & /*req*/, Response &res) {
-    cout << "connected to event2..." << endl;
-    res.set_chunked_content_provider("text/event-stream",
-                                     [&](size_t /*offset*/, DataSink &sink) {
-                                       return ed.wait_event(&sink);
-                                     });
-  });
+	svr.Get ("/event2", [&] (const Request& /*req*/, Response& res) {
+		cout << "connected to event2..." << endl;
+		res.set_chunked_content_provider ("text/event-stream", [&] (size_t /*offset*/, DataSink& sink) {
+			return ed.wait_event (&sink);
+		});
+	});
 
-  thread t([&] {
-    int id = 0;
-    while (true) {
-      this_thread::sleep_for(chrono::seconds(1));
-      cout << "send event: " << id << std::endl;
-      std::stringstream ss;
-      ss << "data: " << id << "\n\n";
-      ed.send_event(ss.str());
-      id++;
-    }
-  });
+	thread t ([&] {
+		int id = 0;
+		while (true) {
+			this_thread::sleep_for (chrono::seconds (1));
+			cout << "send event: " << id << std::endl;
+			std::stringstream ss;
+			ss << "data: " << id << "\n\n";
+			ed.send_event (ss.str ());
+			id++;
+		}
+	});
 
-  svr.listen("localhost", 1234);
+	svr.listen ("localhost", 1234);
 }

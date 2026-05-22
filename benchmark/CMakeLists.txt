@@ -1,0 +1,4 @@
+add_executable(benchmark_server cpp-httplib/main.cpp)
+target_link_libraries(benchmark_server PRIVATE httplib::httplib)
+target_compile_definitions(benchmark_server PRIVATE CPPHTTPLIB_THREAD_POOL_COUNT=16)
+set_target_properties(benchmark_server PROPERTIES OUTPUT_NAME bench-server)

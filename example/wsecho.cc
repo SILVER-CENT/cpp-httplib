@@ -102,34 +102,36 @@ doConnect();
 </html>
 )HTML";
 
-int main(void) {
-  Server svr;
+int
+main (void) {
+	Server svr;
 
-  svr.Get("/", [&](const Request & /*req*/, Response &res) {
-    res.set_content(html, "text/html");
-  });
+	svr.Get ("/", [&] (const Request& /*req*/, Response& res) {
+		res.set_content (html, "text/html");
+	});
 
-  svr.WebSocket(
-      "/ws",
-      [](const Request &req, ws::WebSocket &ws) {
-        std::cout << "WebSocket connected from " << req.remote_addr
-                  << std::endl;
+	svr.WebSocket (
+		"/ws",
+		[] (const Request& req, ws::WebSocket& ws) {
+			std::cout << "WebSocket connected from " << req.remote_addr << std::endl;
 
-        std::string msg;
-        while (ws.read(msg)) {
-          std::cout << "Received: " << msg << std::endl;
-          ws.send("echo: " + msg);
-        }
+			std::string msg;
+			while (ws.read (msg)) {
+				std::cout << "Received: " << msg << std::endl;
+				ws.send ("echo: " + msg);
+			}
 
-        std::cout << "WebSocket disconnected" << std::endl;
-      },
-      [](const std::vector<std::string> &protocols) -> std::string {
-        for (const auto &p : protocols) {
-          if (p == "echo" || p == "chat") { return p; }
-        }
-        return "";
-      });
+			std::cout << "WebSocket disconnected" << std::endl;
+		},
+		[] (const std::vector<std::string>& protocols) -> std::string {
+			for (const auto& p: protocols) {
+				if (p == "echo" || p == "chat") {
+					return p;
+				}
+			}
+			return "";
+		});
 
-  std::cout << "Listening on http://localhost:8080" << std::endl;
-  svr.listen("localhost", 8080);
+	std::cout << "Listening on http://localhost:8080" << std::endl;
+	svr.listen ("localhost", 8080);
 }

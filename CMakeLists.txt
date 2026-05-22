@@ -276,44 +276,7 @@ endif()
 include(GNUInstallDirs)
 
 if(HTTPLIB_COMPILE)
-	# Put the split script into the build dir
-	configure_file(split.py "${CMAKE_CURRENT_BINARY_DIR}/split.py"
-		COPYONLY
-	)
-	# Needs to be in the same dir as the python script
-	configure_file(httplib.h "${CMAKE_CURRENT_BINARY_DIR}/httplib.h"
-		COPYONLY
-	)
-
-	# Used outside of this if-else
-	set(_INTERFACE_OR_PUBLIC PUBLIC)
-	# Brings in the Python3_EXECUTABLE path we can use.
-	find_package(Python3 REQUIRED)
-	# Actually split the file
-	# Keeps the output in the build dir to not pollute the main dir
-	execute_process(COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/split.py"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		ERROR_VARIABLE _httplib_split_error
-	)
-	if(_httplib_split_error)
-		message(FATAL_ERROR "Failed when trying to split cpp-httplib with the Python script.\n${_httplib_split_error}")
-	endif()
-
-	# If building modules, also generate the module file
-	if(HTTPLIB_BUILD_MODULES)
-		# Put the generate_module script into the build dir
-		configure_file(generate_module.py "${CMAKE_CURRENT_BINARY_DIR}/generate_module.py"
-			COPYONLY
-		)
-		# Generate the module file
-		execute_process(COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/generate_module.py"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			ERROR_VARIABLE _httplib_module_error
-		)
-		if(_httplib_module_error)
-			message(FATAL_ERROR "Failed when trying to generate cpp-httplib module with the Python script.\n${_httplib_module_error}")
-		endif()
-	endif()
+	message(FATAL_ERROR "HTTPLIB_COMPILE requires split.py which has been removed from this fork. Use header-only mode (HTTPLIB_COMPILE=OFF, the default).")
 
 	# split.py puts output in "out"
 	set(_httplib_build_includedir "${CMAKE_CURRENT_BINARY_DIR}/out")
@@ -464,7 +427,18 @@ if(HTTPLIB_BUILD_MODULES AND NOT HTTPLIB_COMPILE)
 	message(FATAL_ERROR "HTTPLIB_BUILD_MODULES requires HTTPLIB_COMPILE to be ON.")
 endif()
 
+option(HTTPLIB_EXAMPLES "Build example programs" OFF)
+option(HTTPLIB_BENCH "Build benchmark programs" OFF)
+
 if(HTTPLIB_TEST)
 	include(CTest)
 	add_subdirectory(test)
+endif()
+
+if(HTTPLIB_EXAMPLES)
+	add_subdirectory(example)
+endif()
+
+if(HTTPLIB_BENCH)
+	add_subdirectory(benchmark)
 endif()

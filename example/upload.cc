@@ -11,7 +11,7 @@
 using namespace httplib;
 using namespace std;
 
-const char *html = R"(
+const char* html = R"(
 <form id="formElem">
   <input type="file" name="image_file" accept="image/*">
   <input type="file" name="text_file" accept="text/*">
@@ -29,33 +29,34 @@ const char *html = R"(
 </script>
 )";
 
-int main(void) {
-  Server svr;
+int
+main (void) {
+	Server svr;
 
-  svr.Get("/", [](const Request & /*req*/, Response &res) {
-    res.set_content(html, "text/html");
-  });
+	svr.Get ("/", [] (const Request& /*req*/, Response& res) {
+		res.set_content (html, "text/html");
+	});
 
-  svr.Post("/post", [](const Request &req, Response &res) {
-    const auto &image_file = req.form.get_file("image_file");
-    const auto &text_file = req.form.get_file("text_file");
+	svr.Post ("/post", [] (const Request& req, Response& res) {
+		const auto& image_file = req.form.get_file ("image_file");
+		const auto& text_file = req.form.get_file ("text_file");
 
-    cout << "image file length: " << image_file.content.length() << endl
-         << "image file name: " << image_file.filename << endl
-         << "text file length: " << text_file.content.length() << endl
-         << "text file name: " << text_file.filename << endl;
+		cout << "image file length: " << image_file.content.length () << endl
+			 << "image file name: " << image_file.filename << endl
+			 << "text file length: " << text_file.content.length () << endl
+			 << "text file name: " << text_file.filename << endl;
 
-    {
-      ofstream ofs(image_file.filename, ios::binary);
-      ofs << image_file.content;
-    }
-    {
-      ofstream ofs(text_file.filename);
-      ofs << text_file.content;
-    }
+		{
+			ofstream ofs (image_file.filename, ios::binary);
+			ofs << image_file.content;
+		}
+		{
+			ofstream ofs (text_file.filename);
+			ofs << text_file.content;
+		}
 
-    res.set_content("done", "text/plain");
-  });
+		res.set_content ("done", "text/plain");
+	});
 
-  svr.listen("localhost", 1234);
+	svr.listen ("localhost", 1234);
 }

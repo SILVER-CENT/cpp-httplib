@@ -1,5 +1,102 @@
-BasedOnStyle: LLVM
-AllowShortBlocksOnASingleLine: true
+---
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 90
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+MaxEmptyLinesToKeep: 2
+InsertNewlineAtEOF: true
+
+# Indentation
+IndentCaseLabels: true
+IndentGotoLabels: true
+IndentPPDirectives: AfterHash
+NamespaceIndentation: All
+
+
+# Alignment
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments: false
+
+# Line Breaking
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: All
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeTernaryOperators: true
+BreakStringLiterals: true
+
+# Braces
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# Spaces
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Always
+SpaceBeforeRangeBasedForLoopColon: false
+SpaceBeforeSquareBrackets: true
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# C++ Specific
+AccessModifierOffset: -4
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
 Cpp11BracedListStyle: true
+FixNamespaceComments: true
+IncludeBlocks: Preserve
+ReflowComments: true
+SortIncludes: Never
+SortUsingDeclarations: false
+
+# Penalties
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyBreakComment: 200
+PenaltyBreakFirstLessLess: 100
+PenaltyBreakString: 100
+PenaltyExcessCharacter: 1
+PenaltyReturnTypeOnItsOwnLine: 10
+
+# For preprocessor directive indentation
+PPIndentWidth: 2
